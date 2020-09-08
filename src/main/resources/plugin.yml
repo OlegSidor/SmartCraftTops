@@ -1,0 +1,5 @@
+name: Tops
+version: ${project.version}
+main: smartcraft.tops.Tops
+authors: [OldNeer]
+website: smart-craft.cf
