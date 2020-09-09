@@ -7,7 +7,9 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import smartcraft.airdrop.AirDrop;
 import smartcraft.tops.DB.Mysql;
+import smartcraft.tops.Events.AirdropHarvestEvent;
 import smartcraft.tops.Events.EntityDeathEvent;
 import smartcraft.tops.Events.PlayerQuitEvent;
 
@@ -41,9 +43,10 @@ public final class Tops extends JavaPlugin {
 
     enableStats();
 
-    if (!setupEconomy()) {
-      stats.put("money" , false);
-    }
+    if (!setupEconomy())
+      stats.put("money", false);
+    if (getServer().getServicesManager().getRegistration(AirDrop.class) != null)
+      stats.put("airdrop", false);
 
 
     addEvents();
@@ -61,11 +64,13 @@ public final class Tops extends JavaPlugin {
 
     new EntityDeathEvent();
     new PlayerQuitEvent();
+    if (stats.get("airdrop"))
+      new AirdropHarvestEvent();
 
   }
 
-  private void enableStats(){
-    if(getConfig().contains("stats")){
+  private void enableStats() {
+    if (getConfig().contains("stats")) {
       getConfig().getStringList("stats").forEach(s -> stats.put(s, true));
     }
   }
