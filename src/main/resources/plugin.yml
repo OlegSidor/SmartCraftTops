@@ -3,3 +3,4 @@ version: ${project.version}
 main: smartcraft.tops.Tops
 authors: [OldNeer]
 website: smart-craft.cf
+depend: [Vault, VaultEvents]

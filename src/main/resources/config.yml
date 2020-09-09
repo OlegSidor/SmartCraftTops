@@ -4,3 +4,6 @@ db: "smartcraft"
 user: ""
 password: ""
 column: ""
+stats:
+  - monsters
+  - money

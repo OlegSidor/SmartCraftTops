@@ -3,21 +3,24 @@ package smartcraft.tops;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.EventExecutor;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import smartcraft.tops.DB.Mysql;
 import smartcraft.tops.Events.EntityDeathEvent;
+import smartcraft.tops.Events.PlayerQuitEvent;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class Tops extends JavaPlugin {
 
   private static Tops instance;
   private Mysql mysql;
-
+  private Economy economy = null;
+  private Map<String, Boolean> stats = new HashMap<>();
 
   @Override
   public void onEnable() {
@@ -31,9 +34,15 @@ public final class Tops extends JavaPlugin {
 
 
     if (!mysql.isConnected()) {
-      Bukkit.getLogger().warning("Plugin disabled");
+      Bukkit.getLogger().warning("Tops disabled, mysql problem");
       Bukkit.getPluginManager().disablePlugin(this);
       return;
+    }
+
+    enableStats();
+
+    if (!setupEconomy()) {
+      stats.put("money" , false);
     }
 
 
@@ -51,7 +60,14 @@ public final class Tops extends JavaPlugin {
   private void addEvents() {
 
     new EntityDeathEvent();
+    new PlayerQuitEvent();
 
+  }
+
+  private void enableStats(){
+    if(getConfig().contains("stats")){
+      getConfig().getStringList("stats").forEach(s -> stats.put(s, true));
+    }
   }
 
   public void setStat(String UUID, String statName, int value) {
@@ -83,7 +99,21 @@ public final class Tops extends JavaPlugin {
     return instance;
   }
 
-  public Mysql getMysql() {
-    return mysql;
+
+  private boolean setupEconomy() {
+    RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+    if (economyProvider != null) {
+      economy = economyProvider.getProvider();
+    }
+
+    return (economy != null);
+  }
+
+  public Economy getEconomy() {
+    return economy;
+  }
+
+  public Map<String, Boolean> getStats() {
+    return stats;
   }
 }

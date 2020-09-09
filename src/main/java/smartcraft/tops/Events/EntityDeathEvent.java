@@ -17,11 +17,13 @@ public class EntityDeathEvent implements Listener {
 
   @EventHandler
   public void onDeath(org.bukkit.event.entity.EntityDeathEvent e) {
-    if (e.getEntity().getKiller() != null) {
-      if (e.getEntity() instanceof Monster) {
-        Player player = e.getEntity().getKiller();
-        plugin.setStat(player.getUniqueId().toString(), "KillEntity",
-            plugin.getStat(player.getUniqueId().toString(), "KillEntity") + 1);
+    if (plugin.getStats().get("monsters")) {
+      if (e.getEntity().getKiller() != null) {
+        if (e.getEntity() instanceof Monster) {
+          Player player = e.getEntity().getKiller();
+          plugin.setStat(player.getUniqueId().toString(), "monsters",
+              plugin.getStat(player.getUniqueId().toString(), "monsters") + 1);
+        }
       }
     }
   }
