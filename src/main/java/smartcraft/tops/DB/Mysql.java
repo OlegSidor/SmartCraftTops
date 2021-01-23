@@ -1,6 +1,7 @@
 package smartcraft.tops.DB;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -80,6 +81,15 @@ public class Mysql {
     }
   }
 
+  public ResultSet getStats() {
+    try {
+      PreparedStatement statement = connection.prepareStatement("SELECT UUID, "+column+" FROM Tops");
+      return statement.executeQuery();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
   public String getStats(String UUID) {
     try {
     PreparedStatement statement = connection.prepareStatement("SELECT "+column+" FROM Tops WHERE UUID = ?");
@@ -94,7 +104,49 @@ public class Mysql {
     return null;
   }
 
+  public void setLocation(String type, Location l, int place){
+    try {
+      PreparedStatement statement = connection.prepareStatement("INSERT TopsLocations(`type`, x, y, z, pitch, yaw, server, place, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+      statement.setString(1, type);
+      statement.setDouble(2, l.getX());
+      statement.setDouble(3, l.getY());
+      statement.setDouble(4, l.getZ());
+      statement.setDouble(5, l.getPitch());
+      statement.setDouble(6, l.getYaw());
+      statement.setString(7, column);
+      statement.setInt(8, place);
+      statement.setString(9, l.getWorld().getName());
+
+      statement.execute();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public List<Location> getLocations(String type){
+    List<Location> locations = new ArrayList<>();
+    try {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM TopsLocations WHERE type = ? AND server = ? ORDER BY place");
+      statement.setString(1, type);
+      statement.setString(2, column);
+      ResultSet result = statement.executeQuery();
+      while (result.next()){
+        Location location = new Location(Bukkit.getWorld(result.getString("world")),
+            result.getDouble("x"), result.getDouble("y"), result.getDouble("z"),
+            result.getFloat("yaw"), result.getFloat("pitch"));
+        locations.add(location);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return locations;
+  }
+
   public boolean isConnected() {
     return connected;
+  }
+
+  public String getColumn() {
+    return column;
   }
 }

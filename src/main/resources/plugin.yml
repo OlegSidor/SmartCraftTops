@@ -4,3 +4,6 @@ main: smartcraft.tops.Tops
 authors: [OldNeer]
 website: smart-craft.cf
 depend: [Vault, VaultEvents]
+commands:
+  tops:
+    usage: /tops <args>

@@ -8,3 +8,8 @@ stats:
   - monsters
   - money
   - airdrop
+text:
+  monsters: "Убийство монстров"
+  money: "Деньги"
+  airdrop: "Аирдропы"
+places:
